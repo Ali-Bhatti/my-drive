@@ -8,16 +8,16 @@ Vue.use(Vuetify);
 export default new Vuetify({
     // for using "Material Design fonts"
     icons: {
-        iconfont: 'md', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+        iconfont: 'md' || 'mdi', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
     },
-    // theme: {
-    //     themes: {
-    //       light: {
-    //         primary: '#40e6cf',
-    //         secondary: '#b0bec5',
-    //         accent: '#8c9eff',
-    //         error: '#b71c1c',
-    //       },
-    //     },
-    //   },
+    theme: {
+        themes: {
+          light: {
+            primary: '#1DE9B6',
+            secondary: '#E0F2F1',
+            accent: '#01A775',
+            // error: '#b71c1c',
+          },
+        },
+      },
 });

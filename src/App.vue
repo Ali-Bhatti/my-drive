@@ -2,9 +2,9 @@
   <v-app>
     <v-main class="grey lighten-2">
       <navbar name="Umar"></navbar>
-      <v-content class="pa-3">
+      <div class="pa-3">
         <router-view />
-      </v-content>
+      </div>
     </v-main>
   </v-app>
 </template>

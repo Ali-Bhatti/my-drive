@@ -1,12 +1,19 @@
 <template>
   <div class="about">
-    <h1 class="display-1">This is an About Us Page</h1>
+    <p class="text-h4">About</p>
+    <p class="text-body-1">
+      This is the replica of <span class="drive">Drive Web App</span>. One
+      functionality of <span class="drive">Drive Web App</span> is replicated i.e., You can make folders inside other folders.
+    </p>
   </div>
 </template>
 <script>
-
 export default {
-  components:{
-  }
-}
+  components: {},
+};
 </script>
+<style scoped>
+.drive{
+  color: rgb(1, 167, 117);
+}
+</style>
