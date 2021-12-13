@@ -16,6 +16,7 @@ export default new Vuetify({
             primary: '#1DE9B6',
             secondary: '#E0F2F1',
             accent: '#01A775',
+            bg_color: "#E0E0E0"
             // error: '#b71c1c',
           },
         },

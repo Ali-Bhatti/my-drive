@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-main class="grey lighten-2">
-      <navbar name="Umar"></navbar>
+    <v-main class="bg_color">
+      <navbar :name="userName"></navbar>
       <div class="pa-3">
         <router-view />
       </div>
@@ -17,8 +17,11 @@ export default {
     Navbar,
   },
   data: () => ({
-    //
+    userName: '',
   }),
+  mounted(){
+    this.userName = this.$store.getters.userName
+  }
 };
 </script>
 <style>

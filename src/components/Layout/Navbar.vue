@@ -43,12 +43,13 @@
     <v-navigation-drawer app v-model="drawer" color="secondary">
       <v-container align-content="center" class="mt-4">
         <v-row justify="center">
-          <v-avatar size="100">
-            <img src="/avatar.png" alt="" />
+          <v-avatar size="70" color="blue">
+            <!-- <img src="/avatar.png" alt="" /> -->
+            <span class="white--text text-h5">{{ avatarName }}</span>
           </v-avatar>
         </v-row>
         <v-row justify="center">
-          <p class="grey--text subheading mt-1">Muhammad Ali Bhatti</p>
+          <p class="grey--text subheading mt-1">{{ name }}</p>
         </v-row>
       </v-container>
       <v-list>
@@ -80,6 +81,7 @@ export default {
   data() {
     return {
       drawer: true,
+      avatarBgColor: null,
       links: [
         { icon: "home", text: "Home", route: "/" },
         { icon: "mdi-help-box", text: "About", route: "/about" },
@@ -94,5 +96,12 @@ export default {
       return size === "x-small" || size === "small" ? true : false;
     },
   },
+  computed:{
+    avatarName(){
+      // as I need just two characters of each word in name that ia why I wrote 2. 
+      // like "Muhammad Ali" required => "MA"
+      return this.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
+    },
+  }
 };
 </script>
