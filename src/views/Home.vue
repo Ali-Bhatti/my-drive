@@ -2,18 +2,7 @@
   <div class="home">
     <v-container fluid class="pa-4">
       <v-row class="py-2">
-        {{ /* Button to Trigger the Popup */ }}
-        <v-btn
-          rounded
-          x-large
-          class="text-capitalize black--text"
-          color="secondary"
-          @click="dialog = true"
-        >
-          <v-icon left large class="mr-4">create_new_folder</v-icon>
-          New Folder
-        </v-btn>
-        <popup v-model="dialog"/>
+        <popup/>
       </v-row>
       <v-row class="px-2 pt-2">
         <p class="text-h5">Folders</p>
@@ -76,7 +65,6 @@ export default {
   components: { Popup },
   data() {
     return {
-      dialog: false,
       folders: [],
       sortDirection: "descending",
     };

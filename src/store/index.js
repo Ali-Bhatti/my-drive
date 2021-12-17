@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        userName: "Muhammad Ali Bhatti",
+        userName: "Usman Ali",
         folders: [
             { name: "Folder 1", route: "/folder1" },
             { name: "My Family Pics", route: "/folder2" },
