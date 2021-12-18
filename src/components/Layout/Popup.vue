@@ -23,7 +23,7 @@
           New Folder
         </v-card-title>
 
-        <v-form ref="form" v-model="isFormValid">
+        <v-form ref="form"  @submit.prevent="createFolder" v-model="isFormValid">
 
           <v-card-text class="mt-1 mb-0">
             <v-text-field 
@@ -66,14 +66,16 @@
   export default {
     data () {
       return {
+        ufCount : 1, // uf -> New Folder // will be store in DB
+        uf: 'New Folder',  // will be store in DB
         isFormValid: false,
         dialog: false,
         folders: [],
-        folderName: 'Untitled Folder',
+        folderName: 'New Folder',
         nameRules: [
-          v => !!v || 'Folder Name is required',
+          v => !!v.trim() || 'Folder Name is required',
           // v => /^[^<>"/:`%|]*$/.test(v) || 'Special Characters are not allowed',
-          v => v.length <= 100 || 'Name must be less than 100 characters',
+          v => v.trim().length <= 100 || 'Name must be less than 100 characters',
         ],
       }
     },
@@ -87,11 +89,20 @@
         this.$store.dispatch("addNewFolder", {
           folderName : this.folderName
         });
-        this.folderName = 'Untitled Folder';
+        this.newFolderExists();
       },
-      cancelDialog(){
+      newFolderExists(){
+        // Handling New folder's count
+        if(this.ufCount === 1){
+          if(this.folderName === "New Folder") this.uf = `New Folder(${++this.ufCount})`;
+        } else {
+          if(this.folderName === `New Folder(${this.ufCount})`) this.uf = `New Folder(${++this.ufCount})`;
+        }
+        this.folderName = this.uf;
+      },
+      cancelDialog(){ 
         this.dialog = false;
-        this.folderName = 'Untitled Folder'
+        this.folderName = this.uf;
       },
       folderExists(name){
         if (this.folders.map(ele => ele.name.toLowerCase()).includes(name.trim().toLowerCase()))

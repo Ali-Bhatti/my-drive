@@ -17,6 +17,7 @@
               v-bind="attrs"
               v-on="on"
               @click="sortBy('name')"
+              :disabled="showFolders"
             >
               <v-icon left>mdi-sort-alphabetical-{{ sortDirection }}-variant</v-icon>
               by Folder Name
@@ -28,8 +29,12 @@
         </v-tooltip>
       </v-row>
     </v-container>
+    <v-divider></v-divider>
     <v-container fluid class="px-1">
-      <v-row>
+      <v-row v-if="showFolders" justify="center" class="mt-1 font-weight-light">
+        This folder is empty.
+      </v-row>
+      <v-row >
         <v-col
           cols="6"
           sm="4"
@@ -68,6 +73,11 @@ export default {
       folders: [],
       sortDirection: "descending",
     };
+  },
+  computed:{
+    showFolders(){
+      return this.folders && this.folders.length === 0
+    }
   },
   methods: {
     sortBy(prop) {
