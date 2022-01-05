@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main class="bg_color">
-      <navbar :name="userName"></navbar>
+      <!-- <router-view v-if="!login" :key="$router.path"></router-view>-->
       <div class="pa-3">
         <router-view />
       </div>
@@ -10,18 +10,11 @@
 </template>
 
 <script>
-import Navbar from "./components/Layout/Navbar.vue";
 export default {
   name: "App",
-  components: {
-    Navbar,
-  },
   data: () => ({
-    userName: '',
+    //login: false
   }),
-  mounted(){
-    this.userName = this.$store.getters.userName
-  }
 };
 </script>
 <style>

@@ -86,9 +86,7 @@
         this.dialog = false;
         let res = this.$refs.form.validate();
         console.log("RESULT OF validate", res);
-        this.$store.dispatch("addNewFolder", {
-          folderName : this.folderName
-        });
+        this.$store.dispatch("addNewFolder", { name: this.folderName, parent_id: null });
         this.newFolderExists();
       },
       newFolderExists(){
@@ -99,6 +97,7 @@
           if(this.folderName === `New Folder(${this.ufCount})`) this.uf = `New Folder(${++this.ufCount})`;
         }
         this.folderName = this.uf;
+        this.$store.dispatch("setUfCount", { ufCount: this.ufCount});
       },
       cancelDialog(){ 
         this.dialog = false;
@@ -113,6 +112,8 @@
     },
     beforeMount(){
       this.folders = this.$store.getters.folders;
+      this.ufCount = this.$store.getters.ufCount;
+      this.folderName = this.ufCount > 1 ? `New Folder(${this.ufCount})` : 'New Folder';
     }
   }
 </script>

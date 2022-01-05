@@ -1,12 +1,15 @@
 <template>
   <div class="home">
+    <navbar :name="userName"></navbar>
     <v-container fluid class="pa-4">
       <v-row class="py-2">
         <popup/>
       </v-row>
       <v-row class="px-2 pt-2">
-        <p class="text-h5">Folders</p>
+        <v-btn class="text-h5" text>Home</v-btn>
+        <v-icon class="pl-0 ml-0" color="black">arrow_forward_ios</v-icon>
       </v-row>
+      <!-- ascending/descending order button -->
       <v-row class="px-2">
         <v-tooltip right>
           <template v-slot:activator="{ on, attrs }">
@@ -65,9 +68,10 @@
 
 <script>
 import Popup from "../components/Layout/Popup.vue";
+import Navbar from "../components/Layout/Navbar.vue";
 export default {
   name: "Home",
-  components: { Popup },
+  components: { Popup , Navbar},
   data() {
     return {
       folders: [],
@@ -95,6 +99,7 @@ export default {
   },
   beforeMount(){
     this.folders = this.$store.getters.folders;
+    this.userName = this.$store.getters.userName;
   }
 };
 </script>

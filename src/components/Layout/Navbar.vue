@@ -8,32 +8,6 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <!-- dropdown menu -->
-      <v-menu offset-y>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            text
-            v-bind="attrs"
-            v-on="on"
-            class="mr-2"
-          >
-            <v-icon dense>expand_more</v-icon>
-            <!-- <span class="d-none d-sm-flex">Menu</span> -->
-            <span>Menu</span>
-          </v-btn>
-        </template>
-          <v-list>
-            <v-list-item
-              v-for="(link, index) in links"
-              :key="index"
-              route
-              :to="link.route"
-            >
-              <v-list-item-title>{{ link.text }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-      </v-menu>
-
       <v-btn outlined>
         Logout
         <v-icon right>logout</v-icon>

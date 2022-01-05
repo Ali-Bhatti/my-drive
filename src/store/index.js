@@ -6,26 +6,33 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         userName: "Usman Ali",
-        folderName: 'Untitled Folder',
+        folderName: 'New Folder',
         folders: [],
+        uf_count: 1,
         // folders: [
-        //     { name: "Folder 1", route: "/folder1" },
-        //     { name: "My Family Pics", route: "/folder2" },
-        //     { name: "My Company Projects", route: "/folder3" },
-        //     { name: "Important Documents", route: "/folder4" },
-        //     { name: "rents files", route: "/folder5" },
-        //     { name: "Important notes given by clients", route: "/folder6" },
-        //     { name: "Folder 7", route: "/folder7" },
+        //     { id: 1, name: "Folder 1", parent_id: null },
+        //     { id: 2, name: "My Family Pics", parent_id: null },
+        //     { id: 3, name: "My Company Projects", parent_id: null },
+        //     { id: 4, name: "Important Documents", parent_id: null },
+        //     { id: 5, name: "rents files", parent_id: null },
+        //     { id: 6, name: "Important notes given by clients", parent_id: null },
+        //     { id: 7, name: "Folder 7", parent_id: null },
         //   ],
     },
     mutations: {
         addFolder(state, payload){
-            state.folders.push({ name: payload.folderName, route: `/${payload.folderName}` })
+            state.folders.push(payload);
+        },
+        setUfCount(state, payload){
+            state.uf_count = payload.ufCount;
         }
     },
     actions: {
         addNewFolder(context, payload){
             context.commit("addFolder", payload);
+        },
+        setUfCount(context, payload){
+            context.commit("setUfCount", payload);
         }
     },
     getters:{
@@ -37,6 +44,9 @@ export default new Vuex.Store({
         },
         folders(state){
             return state.folders;
+        },
+        ufCount(state){
+            return state.uf_count;
         }
     }
   })
