@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <navbar :name="userName"></navbar>
     <v-container fluid class="pa-4">
       <v-row class="py-2">
         <popup/>
@@ -68,10 +67,9 @@
 
 <script>
 import Popup from "../components/Layout/Popup.vue";
-import Navbar from "../components/Layout/Navbar.vue";
 export default {
   name: "Home",
-  components: { Popup , Navbar},
+  components: { Popup },
   data() {
     return {
       folders: [],

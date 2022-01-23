@@ -8,7 +8,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn outlined>
+      <v-btn outlined @click="logout">
         Logout
         <v-icon right>logout</v-icon>
       </v-btn>
@@ -57,7 +57,7 @@ export default {
       drawer: true,
       avatarBgColor: null,
       links: [
-        { icon: "home", text: "Home", route: "/" },
+        { icon: "home", text: "Home", route: "/home" },
         { icon: "mdi-help-box", text: "About", route: "/about" },
       ],
     };
@@ -69,6 +69,10 @@ export default {
       ];
       return size === "x-small" || size === "small" ? true : false;
     },
+    logout(){
+      this.$store.dispatch("isAuth", false);
+      this.$router.push("/");
+    }
   },
   computed:{
     avatarName(){

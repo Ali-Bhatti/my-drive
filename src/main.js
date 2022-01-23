@@ -9,6 +9,7 @@ Vue.config.productionTip = false;
 
 Vue.component("navbar", './components/Layout/Navbar.vue');
 Vue.component("base-button", './components/UI/BaseButton.vue');
+Vue.component("base-card", "./components/UI/BaseCard.vue")
 
 new Vue({
   router,

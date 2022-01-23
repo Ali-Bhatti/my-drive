@@ -9,6 +9,7 @@ export default new Vuex.Store({
         folderName: 'New Folder',
         folders: [],
         uf_count: 1,
+        isAuth: false
         // folders: [
         //     { id: 1, name: "Folder 1", parent_id: null },
         //     { id: 2, name: "My Family Pics", parent_id: null },
@@ -20,33 +21,42 @@ export default new Vuex.Store({
         //   ],
     },
     mutations: {
-        addFolder(state, payload){
+        addFolder(state, payload) {
             state.folders.push(payload);
         },
-        setUfCount(state, payload){
+        setUfCount(state, payload) {
             state.uf_count = payload.ufCount;
+        },
+        isAuth(state, payload) {
+            state.isAuth = payload;
         }
     },
     actions: {
-        addNewFolder(context, payload){
+        addNewFolder(context, payload) {
             context.commit("addFolder", payload);
         },
-        setUfCount(context, payload){
+        setUfCount(context, payload) {
             context.commit("setUfCount", payload);
+        },
+        isAuth(context, payload) {
+            context.commit('isAuth', payload);
         }
     },
-    getters:{
-        userName(state){
+    getters: {
+        userName(state) {
             return state.userName;
         },
-        folderName(state){
+        folderName(state) {
             return state.folderName;
         },
-        folders(state){
+        folders(state) {
             return state.folders;
         },
-        ufCount(state){
+        ufCount(state) {
             return state.uf_count;
+        },
+        isAuth(state) {
+            return state.isAuth;
         }
     }
-  })
+})
