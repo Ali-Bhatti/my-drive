@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <v-main class="bg_color">
-      <navbar :name="userName"></navbar>
-      <div class="pa-3">
+      <navbar v-if="!isAuthRoute" :name="userName"></navbar>
+      <div :class="{ 'pa-3': !isAuthRoute }">
         <router-view />
       </div>
     </v-main>
@@ -16,14 +16,17 @@ export default {
   components: {
     Navbar,
   },
-  data: () => ({
-    userName: '',
-  }),
-  mounted(){
-    this.userName = this.$store.getters.userName
+  computed: {
+    isAuthRoute() {
+      return ['/login', '/signup'].includes(this.$route.path);
+    },
+    userName() {
+      return this.$store.getters.userName;
+    }
   }
 };
 </script>
+
 <style>
 .bg-color {
   background-color: #ebebeb;
