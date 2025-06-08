@@ -53,10 +53,26 @@
     <v-navigation-drawer app v-model="drawer" color="secondary">
       <v-container align-content="center" class="mt-4">
         <v-row justify="center">
-          <v-avatar size="70" color="blue">
-            <!-- <img src="/avatar.png" alt="" /> -->
-            <span class="white--text text-h5">{{ avatarName }}</span>
-          </v-avatar>
+          <v-hover v-slot="{ hover }">
+            <div class="avatar-container">
+              <v-avatar size="70" color="blue" v-if="!avatarImage">
+                <span class="white--text text-h5">{{ avatarName }}</span>
+              </v-avatar>
+              <v-avatar size="70" v-else>
+                <v-img :src="avatarImage" alt="Avatar"></v-img>
+              </v-avatar>
+
+              <v-fade-transition>
+                <v-overlay absolute :value="hover" class="align-center justify-center">
+                  <v-btn small icon @click="$refs.avatarInput.click()">
+                    <v-icon color="white">mdi-camera</v-icon>
+                  </v-btn>
+                </v-overlay>
+              </v-fade-transition>
+            </div>
+          </v-hover>
+
+          <input ref="avatarInput" type="file" accept="image/*" style="display: none" @change="onAvatarChange">
         </v-row>
         <v-row justify="center">
           <p class="grey--text subheading mt-1">{{ name }}</p>
@@ -90,6 +106,7 @@ export default {
       loading: false,
       showLogoutDialog: false,
       avatarBgColor: null,
+      avatarImage: null,
       links: [
         { icon: "home", text: "Home", route: "/home" },
         { icon: "mdi-help-box", text: "About", route: "/about" },
@@ -115,6 +132,30 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    onAvatarChange(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        this.$store.dispatch('setError', 'Please upload an image file');
+        return;
+      }
+
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.$store.dispatch('setError', 'Image size should be less than 5MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.avatarImage = e.target.result;
+        // Save to localStorage
+        localStorage.setItem('userAvatar', e.target.result);
+      };
+      reader.readAsDataURL(file);
     }
   },
   computed: {
@@ -123,6 +164,25 @@ export default {
       // like "Muhammad Ali" required => "MA"
       return this.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
     },
+  },
+  mounted() {
+    // Load saved avatar from localStorage
+    const savedAvatar = localStorage.getItem('userAvatar');
+    if (savedAvatar) {
+      this.avatarImage = savedAvatar;
+    }
   }
 };
 </script>
+
+<style scoped>
+.avatar-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.v-overlay {
+  border-radius: 50%;
+}
+</style>
