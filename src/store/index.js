@@ -1,72 +1,145 @@
 import Vue from "vue";
 import Vuex from 'vuex';
+import moment from "moment";
+import { db } from '../db';
 
 Vue.use(Vuex);
 
+// Initialize lastUserId from localStorage or default to 1
+const getInitialLastUserId = () => {
+    const storedId = localStorage.getItem('lastUserId');
+    return storedId ? parseInt(storedId) : 1;
+};
+
+// Get initial logged in user from localStorage
+const getLoggedInUser = () => {
+    const userStr = localStorage.getItem('loggedInUser');
+    return userStr ? JSON.parse(userStr) : null;
+};
+
 export default new Vuex.Store({
     state: {
-        //userName: "Usman Ali",
         userName: "",
-        users: [],
-        folders: [
-            { name: "Folder 1", route: "/folder1", createdAt: '2024-08-11', createdBy: 'Default User' },
-            { name: "My Family Pics", route: "/folder2", createdAt: '2024-06-12', createdBy: 'Default User'  },
-            { name: "My Company Projects", route: "/folder3", createdAt: '2024-09-27', createdBy: 'Default User' },
-            { name: "Important Documents", route: "/folder4", createdAt: '2024-01-31', createdBy: 'Default User' },
-            { name: "rents files", route: "/folder5", createdAt: '2024-10-06', createdBy: 'Default User' },
-            { name: "Important notes given by clients", route: "/folder6", createdAt: '2023-12-20', createdBy: 'Default User' },
-            { name: "Folder 7", route: "/folder7", createdAt: '2024-08-19', createdBy: 'Default User' },
-        ],
+        lastUserId: getInitialLastUserId(),
+        loggedInUser: getLoggedInUser(),
+        users: [{
+            id: 1,
+            name: "Default User",
+            email: "default@user.com",
+            password: "123456"
+        }],
+        folders: [],
         loginError: null
     },
     mutations: {
-        addFolder(state, payload) {
-            state.folders.push({ name: payload.folderName, route: `/${payload.folderName}` })
+        setFolders(state, folders) {
+            state.folders = folders;
         },
-        registerUser(state, payload) {
-            state.users.push(payload);
-            state.userName = payload.name;
+        addFolder(state, folder) {
+            state.folders.push(folder);
+        },
+        registerUser(state, newUser) {
+            state.lastUserId++;
+            localStorage.setItem('lastUserId', state.lastUserId.toString());
+            state.userName = newUser.name;
+            state.loggedInUser = newUser;
+            // Store user in localStorage
+            localStorage.setItem('loggedInUser', JSON.stringify(newUser));
         },
         setLoginError(state, error) {
             state.loginError = error;
         },
         setCurrentUser(state, user) {
             state.userName = user.name;
+            state.loggedInUser = user;
+            // Store user in localStorage
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
         },
         logout(state) {
             state.userName = '';
+            state.loggedInUser = null;
+            // Clear user from localStorage
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('isAuthenticated');
         }
     },
     actions: {
-        addNewFolder(context, payload) {
-            context.commit("addFolder", payload);
+        async initializeStore({ commit, state }) {
+            try {
+                // Load initial data
+                const folders = await db.getFoldersByUser(state.loggedInUser.id);
+                console.log("folders by user_id",folders);
+                commit('setFolders', folders);
+            } catch (error) {
+                console.error('Failed to initialize store:', error);
+            }
         },
-        registerNewUser(context, payload) {
-            context.commit("registerUser", payload);
-        },
-        login({ commit, state }, { email, password }) {
-            // Clear any previous login errors
-            commit('setLoginError', null);
+        async addNewFolder({ commit, state }, payload) {
+            try {
+                const folder = {
+                    name: payload.folderName,
+                    route: `/${payload.folderName}`,
+                    createdAt: moment().format('YYYY-MM-DD'),
+                    createdBy: state.loggedInUser.id
+                };
 
-            // Find user with matching email
-            const user = state.users.find(u => u.email === email);
-
-            if (!user) {
-                commit('setLoginError', 'User not found');
+                const id = await db.addFolder(folder);
+                commit('addFolder', { ...folder, id });
+                return true;
+            } catch (error) {
+                console.error('Failed to add folder:', error);
                 return false;
             }
+        },
+        async registerNewUser({ commit }, payload) {
+            try {
+                // Check if email exists
+                const existingUser = await db.getUserByEmail(payload.email);
+                if (existingUser) {
+                    commit('setLoginError', 'Email already exists');
+                    return false;
+                }
 
-            if (user.password !== password) {
-                commit('setLoginError', 'Invalid password');
+                // Add user to database
+                const id = await db.addUser(payload);
+                const newUser = { ...payload, id };
+                commit('registerUser', newUser);
+                localStorage.setItem('isAuthenticated', 'true');
+                return true;
+            } catch (error) {
+                console.error('Failed to register user:', error);
+                commit('setLoginError', 'Registration failed');
                 return false;
             }
+        },
+        async login({ commit }, { email, password }) {
+            try {
+                commit('setLoginError', null);
 
-            // Login successful
-            commit('setCurrentUser', user);
-            return true;
+                // Find user with matching email
+                const user = await db.getUserByEmail(email);
+
+                if (!user) {
+                    commit('setLoginError', 'User not found');
+                    return false;
+                }
+
+                if (user.password !== password) {
+                    commit('setLoginError', 'Invalid password');
+                    return false;
+                }
+
+                // Login successful
+                commit('setCurrentUser', user);
+                localStorage.setItem('isAuthenticated', 'true');
+                return true;
+            } catch (error) {
+                console.error('Login failed:', error);
+                commit('setLoginError', 'Login failed');
+                return false;
+            }
         },
         logout({ commit }) {
-            localStorage.removeItem('isAuthenticated');
             commit('logout');
         }
     },
@@ -74,17 +147,25 @@ export default new Vuex.Store({
         userName(state) {
             return state.userName;
         },
-        folderName(state) {
-            return state.folderName;
-        },
         folders(state) {
             return state.folders;
         },
-        isEmailTaken: (state) => (email) => {
-            return state.users.some(user => user.email === email);
-        },
         loginError(state) {
             return state.loginError;
+        },
+        getCurrentUserId(state) {
+            return state.lastUserId;
+        },
+        getLoggedInUser(state) {
+            return state?.loggedInUser || getLoggedInUser();
+        },
+        getUserById: () => async (id) => {
+            try {
+                return await db.getUserById(id);
+            } catch (error) {
+                console.error('Failed to get user:', error);
+                return null;
+            }
         }
     }
 })

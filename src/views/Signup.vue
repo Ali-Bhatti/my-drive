@@ -105,7 +105,7 @@ export default {
       emailRules: [
         v => !!v || 'Email is required',
         v => /.+@.+\..+/.test(v) || 'Email must be valid',
-        v => !this.$store.getters.isEmailTaken(v) || 'Email already registered'
+        //v => !this.$store.getters.isEmailTaken(v) || 'Email already registered'
       ],
       passwordRules: [
         v => !!v || 'Password is required',

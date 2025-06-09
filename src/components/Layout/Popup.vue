@@ -7,18 +7,19 @@
       <template v-slot:activator="{ on, attrs}">
         <v-btn
           rounded
-          x-large
+          :x-large="isXLarge"
+          :large="!isXLarge"
           class="text-capitalize black--text"
-          color="secondary"
+          :color="isPrimary ? 'primary' : 'secondary'"
           @click="dialog = true"
           v-on="on"
           v-bind="attrs"
         >
-          <v-icon left large class="mr-4">create_new_folder</v-icon>
-          New Folder
+          <v-icon left :large="isXLarge" class="mr-4">{{ icon }}</v-icon>
+          {{ btnText }}
         </v-btn>
       </template>
-      <v-card class="secondary">
+      <v-card class='secondary'>
         <v-card-title class="text-h5">
           New Folder
         </v-card-title>
@@ -77,14 +78,35 @@
         ],
       }
     },
-    props: ["value"],
+    props: {
+      value: {
+        type: [String, Number],
+        default: null
+      },
+      icon: {
+        type: String,
+        default: 'create_new_folder'
+      },
+      btnText: {
+        type: String,
+        default: 'New Folder'
+      },
+      isPrimary: {
+        type: Boolean,
+        default: false
+      },
+      isXLarge: {
+        type: Boolean,
+        default: true
+      }
+    },
     methods:{
-      createFolder(){
+      async createFolder(){
         console.log(this.folderName);
         this.dialog = false;
         let res = this.$refs.form.validate();
         console.log("RESULT OF validate", res);
-        this.$store.dispatch("addNewFolder", {
+        await this.$store.dispatch("addNewFolder", {
           folderName : this.folderName
         });
         this.folderName = 'Untitled Folder';

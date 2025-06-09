@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main class="bg_color">
-      <navbar v-if="!isAuthRoute" :name="userName"></navbar>
+      <navbar v-if="!isAuthRoute"></navbar>
       <div :class="{ 'pa-3': !isAuthRoute }">
         <router-view />
       </div>
@@ -19,9 +19,6 @@ export default {
   computed: {
     isAuthRoute() {
       return ['/login', '/signup'].includes(this.$route.path);
-    },
-    userName() {
-      return this.$store.getters.userName;
     }
   }
 };

@@ -27,7 +27,7 @@
                   outlined
                   dense
                   class="rounded-lg"
-                  @input="validateEmail"
+                  @input="$v.email.$touch()"
                   @blur="validateEmail"
                 ></v-text-field>
 
@@ -52,7 +52,7 @@
                 color="rgb(1, 167, 117)"
                 class="white--text"
                 height="45"
-                :disabled="!isFormValid"
+                :disabled="!isFormValid || validating"
                 :loading="loading"
                 @click="handleLogin"
               >
@@ -73,12 +73,16 @@
 </template>
 
 <script>
+import { db } from '../db';
+import { debounce } from 'lodash';
+
 export default {
   name: 'Login',
   data() {
     return {
       valid: false,
       loading: false,
+      validating: false,
       email: '',
       emailErrors: [],
       password: '',
@@ -97,19 +101,42 @@ export default {
       return this.email && !this.emailErrors.length && this.password && this.password.length >= 6;
     }
   },
+  created() {
+    // Create a debounced version of validateEmail
+    this.debouncedValidateEmail = debounce(this.validateEmail, 300);
+  },
   methods: {
-    validateEmail() {
+    async validateEmail() {
       this.emailErrors = [];
-      if (!this.email) {
-        this.emailErrors.push('Email is required');
-      } else if (!/.+@.+\..+/.test(this.email)) {
-        this.emailErrors.push('Email must be valid');
-      } else if (!this.$store.state.users.some(user => user.email === this.email)) {
-        this.emailErrors.push('Email not registered');
+      this.validating = true;
+
+      try {
+        // Basic format validation
+        if (!this.email) {
+          this.emailErrors.push('Email is required');
+          return;
+        }
+        
+        if (!/.+@.+\..+/.test(this.email)) {
+          this.emailErrors.push('Email must be valid');
+          return;
+        }
+
+        // Check if email exists in database
+        const user = await db.getUserByEmail(this.email);
+        if (!user) {
+          this.emailErrors.push('Email not registered');
+        }
+      } catch (error) {
+        console.error('Error validating email:', error);
+        this.emailErrors.push('Error checking email. Please try again.');
+      } finally {
+        this.validating = false;
       }
     },
     async handleLogin() {
-      this.validateEmail();
+      await this.validateEmail();
+      
       if (this.isFormValid) {
         this.loading = true;
         try {
@@ -131,9 +158,13 @@ export default {
   watch: {
     email() {
       if (this.emailErrors.length) {
-        this.validateEmail();
+        this.debouncedValidateEmail();
       }
     }
+  },
+  beforeDestroy() {
+    // Cancel any pending debounced calls
+    this.debouncedValidateEmail.cancel();
   }
 }
 </script>

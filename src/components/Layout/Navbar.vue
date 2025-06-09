@@ -4,7 +4,7 @@
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title class="text-uppercase">
         <span class="font-weight-light">Welcome </span>
-        <span class="font-weight-bold">{{ name }}</span>
+        <span class="font-weight-bold">{{ userName }}</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -75,7 +75,7 @@
           <input ref="avatarInput" type="file" accept="image/*" style="display: none" @change="onAvatarChange">
         </v-row>
         <v-row justify="center">
-          <p class="grey--text subheading mt-1">{{ name }}</p>
+          <p class="grey--text subheading mt-1">{{ userName }}</p>
         </v-row>
       </v-container>
       <v-list>
@@ -94,12 +94,7 @@
 
 <script>
 export default {
-  props: {
-    name: String,
-    app: {
-      default: true,
-    },
-  },
+  props: {},
   data() {
     return {
       drawer: true,
@@ -164,6 +159,11 @@ export default {
       // like "Muhammad Ali" required => "MA"
       return this.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
     },
+    userName() {
+      let user = this.$store.getters.getLoggedInUser;
+      console.log(user);
+      return user?.name || 'Guest';
+    }
   },
   mounted() {
     // Load saved avatar from localStorage
