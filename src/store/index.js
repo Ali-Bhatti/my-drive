@@ -38,6 +38,9 @@ export default new Vuex.Store({
         addFolder(state, folder) {
             state.folders.push(folder);
         },
+        removeFolder(state, folderId) {
+            state.folders = state.folders.filter(folder => folder.id !== folderId);
+        },
         registerUser(state, newUser) {
             state.lastUserId++;
             localStorage.setItem('lastUserId', state.lastUserId.toString());
@@ -159,6 +162,16 @@ export default new Vuex.Store({
                 return false;
             } catch (error) {
                 console.error('Failed to update avatar:', error);
+                return false;
+            }
+        },
+        async deleteFolder({ commit }, folderId) {
+            try {
+                await db.deleteFolder(folderId);
+                commit('removeFolder', folderId);
+                return true;
+            } catch (error) {
+                console.error('Failed to delete folder:', error);
                 return false;
             }
         }

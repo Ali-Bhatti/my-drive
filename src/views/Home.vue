@@ -45,10 +45,21 @@
                     :ripple="{ center: true }"
                     v-on="on"
                     v-bind="attrs"
-                    @click="openFolder(folder)"
                   >
-                    <v-icon left color="amber darken-2">mdi-folder</v-icon>
-                    {{ folder.name }}
+                    <div class="d-flex align-center justify-space-between">
+                      <div class="d-flex align-center" @click="openFolder(folder)">
+                        <v-icon left color="amber darken-2">mdi-folder</v-icon>
+                        <span class="text-truncate">{{ folder.name }}</span>
+                      </div>
+                      <v-btn
+                        icon
+                        x-small
+                        @click.stop="confirmDelete(folder)"
+                        class="ml-2"
+                      >
+                        <v-icon small color="grey">mdi-delete</v-icon>
+                      </v-btn>
+                    </div>
                   </v-card>
                 </template>
                 <span>{{ folder.name }}</span>
@@ -63,19 +74,29 @@
             <template v-for="folder in folders">
               <v-list-item
                 :key="folder.name"
-                @click="openFolder(folder)"
                 class="rounded-lg mb-2 folder-list-item white"
               >
-                <v-list-item-icon>
-                  <v-icon color="amber darken-2">mdi-folder</v-icon>
-                </v-list-item-icon>
-                
-                <v-list-item-content>
-                  <v-list-item-title>{{ folder.name }}</v-list-item-title>
-                  <v-list-item-subtitle class="text--secondary">
-                    Created {{ folder.createdAt | formatDate }} by {{ getLoggedInUser.name || 'Loading...' }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
+                <div class="d-flex align-center" style="width: 100%" @click="openFolder(folder)">
+                  <v-list-item-icon>
+                    <v-icon color="amber darken-2">mdi-folder</v-icon>
+                  </v-list-item-icon>
+                  
+                  <v-list-item-content>
+                    <v-list-item-title>{{ folder.name }}</v-list-item-title>
+                    <v-list-item-subtitle class="text--secondary">
+                      Created {{ folder.createdAt | formatDate }} by {{ getLoggedInUser.name || 'Loading...' }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                </div>
+
+                <v-btn
+                  icon
+                  small
+                  @click.stop="confirmDelete(folder)"
+                  class="ml-2"
+                >
+                  <v-icon small color="grey">mdi-delete</v-icon>
+                </v-btn>
               </v-list-item>
             </template>
           </v-list>
@@ -83,8 +104,14 @@
       </template>
       
       <!-- Empty State -->
-      <empty-state
-        v-else
+      <empty-state v-else />
+
+      <!-- Delete Confirmation Dialog -->
+      <delete-dialog
+        v-model="showDeleteDialog"
+        :item-name="selectedFolder ? selectedFolder.name : ''"
+        item-type="Folder"
+        @confirm="deleteFolder"
       />
     </v-container>
   </div>
@@ -94,18 +121,22 @@
 import { mapGetters } from 'vuex';
 import Popup from "../components/Layout/Popup.vue";
 import EmptyState from "../components/EmptyState.vue";
+import DeleteDialog from "../components/DeleteDialog.vue";
 
 export default {
   name: "Home",
-  components: { 
+  components: {
     Popup,
-    EmptyState
+    EmptyState,
+    DeleteDialog
   },
   data() {
     return {
       sortDirection: "descending",
       viewType: "grid",
       isLoading: true,
+      showDeleteDialog: false,
+      selectedFolder: null
     };
   },
   computed: {
@@ -136,13 +167,23 @@ export default {
       console.log('Opening folder:', folder.name);
     },
     renameFolder(folder) {
-      // Implement rename logic
       console.log('Rename folder:', folder.name);
     },
-    deleteFolder(folder) {
-      // Implement delete logic
-      console.log('Delete folder:', folder.name);
+    confirmDelete(folder) {
+      this.selectedFolder = folder;
+      this.showDeleteDialog = true;
     },
+    async deleteFolder() {
+      try {
+        if (this.selectedFolder) {
+          await this.$store.dispatch('deleteFolder', this.selectedFolder.id);
+          this.showDeleteDialog = false;
+          this.selectedFolder = null;
+        }
+      } catch (error) {
+        console.error('Failed to delete folder:', error);
+      }
+    }
   },
   async created() {
     this.isLoading = true;
