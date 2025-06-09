@@ -2,6 +2,9 @@
 
 A modern Vue.js application with authentication features and a beautiful Material Design interface using Vuetify.
 
+## 🌐 Live Demo
+The application is deployed and accessible at: [My Drive]()
+
 ## Features
 
 - **User Authentication**
@@ -29,7 +32,7 @@ A modern Vue.js application with authentication features and a beautiful Materia
 - Vuetify (Material Design Framework)
 - Vuex (State Management)
 - Vue Router
-- Local Storage for persistence
+- Dexie (Built with IndexedDB for reliable local data persist)
 
 ## Project Setup
 
