@@ -2,11 +2,21 @@
   <nav>
     <v-app-bar :app="app" color="primary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="text-uppercase">
-        <span class="font-weight-light">Welcome </span>
-        <span class="font-weight-bold">{{ userName }}</span>
-      </v-toolbar-title>
+
+      <div class="d-flex align-center">
+        <Logo :size="32" class="mr-3" />
+        <v-toolbar-title class="text-uppercase">
+          <span class="font-weight-light">My</span>
+          <span class="font-weight-bold"> Drive</span>
+        </v-toolbar-title>
+      </div>
+
       <v-spacer></v-spacer>
+
+      <div class="user-info mr-4">
+        <span class="font-weight-light">Welcome,</span>
+        <span class="font-weight-medium ml-1">{{ userName }}</span>
+      </div>
 
       <!-- dropdown menu -->
       <v-menu offset-y>
@@ -94,7 +104,12 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import Logo from '../Logo.vue';
+
 export default {
+  components: {
+    Logo
+  },
   props: {},
   data() {
     return {

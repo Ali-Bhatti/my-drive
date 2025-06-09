@@ -2,17 +2,8 @@
   <div class="text-center">
     <v-dialog width="370" v-model="dialog">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn 
-          v-if="!menuItem" 
-          rounded
-          :x-large="isXLarge"
-          :large="!isXLarge"
-          class="text-capitalize black--text"
-          :color="isPrimary ? 'primary' : 'secondary'"
-          @click="dialog = true"
-          v-on="on"
-          v-bind="attrs"
-        >
+        <v-btn v-if="!menuItem" rounded :x-large="isXLarge" :large="!isXLarge" class="text-capitalize black--text"
+          :color="isPrimary ? 'primary' : 'secondary'" @click="dialog = true" v-on="on" v-bind="attrs">
           <v-icon left :large="isXLarge" class="mr-4">{{ icon }}</v-icon>
           {{ btnText }}
         </v-btn>
@@ -31,15 +22,8 @@
 
         <v-form ref="form" v-model="isFormValid">
           <v-card-text class="mt-1 mb-0">
-            <v-text-field 
-              outlined single-line
-              color="black"
-              :placeholder="isRenaming ? 'New Name' : 'Folder Name'"
-              v-model="folderName"
-              @focus="$event.target.select()"
-              :rules="[...nameRules, folderExists]"
-              required
-            >
+            <v-text-field outlined single-line color="black" :placeholder="isRenaming ? 'New Name' : 'Folder Name'"
+              v-model="folderName" @focus="$event.target.select()" :rules="[...nameRules, folderExists]" required>
             </v-text-field>
           </v-card-text>
 
@@ -109,6 +93,7 @@ export default {
         this.isRenaming = true;
         this.folderName = this.folder.name;
         this.dialog = true;
+        this.$emit('menu-action');
       }
     },
     async createFolder() {
@@ -129,11 +114,9 @@ export default {
           folderId: this.folder.id,
           newName: this.folderName
         });
-        await this.$store.dispatch('initializeStore');
         this.isRenaming = false;
-        this.dialog = false;
-        this.$refs.menu && this.$refs.menu.close();
-        this.showMenu = false;
+        await this.$store.dispatch('initializeStore');
+        this.$emit('rename-complete');
       }
     },
     cancelDialog() {

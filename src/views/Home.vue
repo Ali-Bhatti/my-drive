@@ -28,13 +28,13 @@
         </v-row>
 
         <!-- Grid View -->
-        <v-container fluid class="px-1" v-if="viewType === 'grid'">
+        <v-container fluid class="px-1 mt-2" v-if="viewType === 'grid'">
           <v-row>
             <v-col
               cols="6"
               sm="4"
               md="3"
-              lg="2"
+              lg="3"
               v-for="(folder, index) in folders"
               :key="index"
             >
@@ -49,10 +49,13 @@
                     <div class="d-flex align-center justify-space-between">
                       <div class="d-flex align-center" @click="openFolder(folder)">
                         <v-icon left color="amber darken-2">mdi-folder</v-icon>
-                        <span class="text-truncate">{{ folder.name }}</span>
+                        <span class="text-truncate">{{ trimFolderName(folder.name) }}</span>
                       </div>
                       <div class="d-flex align-center">
-                        <v-menu offset-y>
+                        <v-menu offset-y 
+                          v-model="menuStates[folder.id]"
+                          @input="setMenuState(folder.id, $event)"
+                        >
                           <template v-slot:activator="{ on: menu, attrs }">
                             <v-btn
                               icon
@@ -70,16 +73,17 @@
                               icon="mdi-pencil"
                               btn-text="Rename"
                               :folder="folder"
+                              @rename-complete="setMenuState(folder.id, false)"
+                              @menu-action="setMenuState(folder.id, false)"
                             />
+                            <v-list-item @click="handleDelete(folder)">
+                              <v-list-item-icon>
+                                <v-icon>mdi-delete</v-icon>
+                              </v-list-item-icon>
+                              <v-list-item-title>Delete</v-list-item-title>
+                            </v-list-item>
                           </v-list>
                         </v-menu>
-                        <v-btn
-                          icon
-                          x-small
-                          @click.stop="confirmDelete(folder)"
-                        >
-                          <v-icon small color="grey">mdi-delete</v-icon>
-                        </v-btn>
                       </div>
                     </div>
                   </v-card>
@@ -112,7 +116,10 @@
                 </div>
 
                 <div class="d-flex align-center">
-                  <v-menu offset-y>
+                  <v-menu offset-y 
+                    v-model="menuStates[folder.id]"
+                    @input="setMenuState(folder.id, $event)"
+                  >
                     <template v-slot:activator="{ on: menu, attrs }">
                       <v-btn
                         icon
@@ -130,16 +137,17 @@
                         icon="mdi-pencil"
                         btn-text="Rename"
                         :folder="folder"
+                        @rename-complete="setMenuState(folder.id, false)"
+                        @menu-action="setMenuState(folder.id, false)"
                       />
+                      <v-list-item @click="handleDelete(folder)">
+                        <v-list-item-icon>
+                          <v-icon>mdi-delete</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>Delete</v-list-item-title>
+                      </v-list-item>
                     </v-list>
                   </v-menu>
-                  <v-btn
-                    icon
-                    small
-                    @click.stop="confirmDelete(folder)"
-                  >
-                    <v-icon small color="grey">mdi-delete</v-icon>
-                  </v-btn>
                 </div>
               </v-list-item>
             </template>
@@ -180,7 +188,8 @@ export default {
       viewType: "grid",
       isLoading: true,
       showDeleteDialog: false,
-      selectedFolder: null
+      selectedFolder: null,
+      menuStates: {}
     };
   },
   computed: {
@@ -210,9 +219,17 @@ export default {
     openFolder(folder) {
       console.log('Opening folder:', folder.name);
     },
+    setMenuState(folderId, state) {
+      this.$set(this.menuStates, folderId, state);
+    },
+    handleDelete(folder) {
+      this.setMenuState(folder.id, false);
+      this.confirmDelete(folder);
+    },
     confirmDelete(folder) {
       this.selectedFolder = folder;
       this.showDeleteDialog = true;
+      this.setMenuState(folder.id, false);
     },
     async deleteFolder() {
       try {
@@ -224,6 +241,9 @@ export default {
       } catch (error) {
         console.error('Failed to delete folder:', error);
       }
+    },
+    trimFolderName(name) {
+      return name.length > 20 ? name.slice(0, 20) + '...' : name;
     }
   },
   async created() {

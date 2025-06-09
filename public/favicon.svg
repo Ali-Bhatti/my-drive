@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main cube shape -->
+  <path 
+    d="M85 35L50 55L15 35L50 15L85 35Z" 
+    fill="#01A775"
+  />
+  <!-- Left side -->
+  <path 
+    d="M15 35L50 55V85L15 65V35Z" 
+    fill="#018A61"
+  />
+  <!-- Right side -->
+  <path 
+    d="M50 55L85 35V65L50 85V55Z" 
+    fill="#00C488"
+  />
+</svg> 
