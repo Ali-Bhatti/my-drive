@@ -41,6 +41,12 @@ export default new Vuex.Store({
         removeFolder(state, folderId) {
             state.folders = state.folders.filter(folder => folder.id !== folderId);
         },
+        updateFolder(state, { id, updates }) {
+            const index = state.folders.findIndex(f => f.id === id);
+            if (index !== -1) {
+                state.folders[index] = { ...state.folders[index], ...updates };
+            }
+        },
         registerUser(state, newUser) {
             state.lastUserId++;
             localStorage.setItem('lastUserId', state.lastUserId.toString());
@@ -172,6 +178,19 @@ export default new Vuex.Store({
                 return true;
             } catch (error) {
                 console.error('Failed to delete folder:', error);
+                return false;
+            }
+        },
+        async renameFolder({ commit }, { folderId, newName }) {
+            try {
+                await db.updateFolder(folderId, { name: newName });
+                commit('updateFolder', {
+                    id: folderId,
+                    updates: { name: newName }
+                });
+                return true;
+            } catch (error) {
+                console.error('Failed to rename folder:', error);
                 return false;
             }
         }

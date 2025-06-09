@@ -51,14 +51,36 @@
                         <v-icon left color="amber darken-2">mdi-folder</v-icon>
                         <span class="text-truncate">{{ folder.name }}</span>
                       </div>
-                      <v-btn
-                        icon
-                        x-small
-                        @click.stop="confirmDelete(folder)"
-                        class="ml-2"
-                      >
-                        <v-icon small color="grey">mdi-delete</v-icon>
-                      </v-btn>
+                      <div class="d-flex align-center">
+                        <v-menu offset-y>
+                          <template v-slot:activator="{ on: menu, attrs }">
+                            <v-btn
+                              icon
+                              x-small
+                              v-bind="attrs"
+                              v-on="menu"
+                              class="mr-1"
+                            >
+                              <v-icon small color="grey">mdi-dots-vertical</v-icon>
+                            </v-btn>
+                          </template>
+                          <v-list dense>
+                            <popup
+                              menu-item
+                              icon="mdi-pencil"
+                              btn-text="Rename"
+                              :folder="folder"
+                            />
+                          </v-list>
+                        </v-menu>
+                        <v-btn
+                          icon
+                          x-small
+                          @click.stop="confirmDelete(folder)"
+                        >
+                          <v-icon small color="grey">mdi-delete</v-icon>
+                        </v-btn>
+                      </div>
                     </div>
                   </v-card>
                 </template>
@@ -89,14 +111,36 @@
                   </v-list-item-content>
                 </div>
 
-                <v-btn
-                  icon
-                  small
-                  @click.stop="confirmDelete(folder)"
-                  class="ml-2"
-                >
-                  <v-icon small color="grey">mdi-delete</v-icon>
-                </v-btn>
+                <div class="d-flex align-center">
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ on: menu, attrs }">
+                      <v-btn
+                        icon
+                        small
+                        v-bind="attrs"
+                        v-on="menu"
+                        class="mr-1"
+                      >
+                        <v-icon small color="grey">mdi-dots-vertical</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list dense>
+                      <popup
+                        menu-item
+                        icon="mdi-pencil"
+                        btn-text="Rename"
+                        :folder="folder"
+                      />
+                    </v-list>
+                  </v-menu>
+                  <v-btn
+                    icon
+                    small
+                    @click.stop="confirmDelete(folder)"
+                  >
+                    <v-icon small color="grey">mdi-delete</v-icon>
+                  </v-btn>
+                </div>
               </v-list-item>
             </template>
           </v-list>
@@ -165,9 +209,6 @@ export default {
     },
     openFolder(folder) {
       console.log('Opening folder:', folder.name);
-    },
-    renameFolder(folder) {
-      console.log('Rename folder:', folder.name);
     },
     confirmDelete(folder) {
       this.selectedFolder = folder;
