@@ -6,48 +6,26 @@
           <v-card-text>
             <div class="text-center mb-6">
               <Logo :size="60" class="mb-4" />
-              <h1 class="text-h4 font-weight-light mb-2">Welcome to <span class="font-weight-medium">My Drive</span></h1>
+              <h1 class="text-h4 font-weight-light mb-2">Welcome to <span class="font-weight-medium">My Drive</span>
+              </h1>
               <p class="text-subtitle-1 text-medium-emphasis">Sign in to continue</p>
             </div>
 
             <v-form ref="form" v-model="valid">
-              <v-text-field
-                v-model="email"
-                :rules="emailRules"
-                label="Email"
-                required
-                outlined
-                dense
-                prepend-inner-icon="mdi-email"
-                class="mb-2"
-              ></v-text-field>
+              <v-text-field v-model="email" :rules="emailRules" label="Email" required outlined dense
+                prepend-inner-icon="mdi-email" class="mb-2"></v-text-field>
 
-              <v-text-field
-                v-model="password"
-                :rules="passwordRules"
-                label="Password"
-                required
-                outlined
-                dense
-                prepend-inner-icon="mdi-lock"
-                :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-                @click:append="showPassword = !showPassword"
-                :type="showPassword ? 'text' : 'password'"
-                class="mb-2"
-              ></v-text-field>
+              <v-text-field v-model="password" :rules="passwordRules" label="Password" required outlined dense
+                prepend-inner-icon="mdi-lock" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="showPassword = !showPassword" :type="showPassword ? 'text' : 'password'"
+                class="mb-2"></v-text-field>
 
-              <div v-if="error" class="error--text text-center mb-4">
+              <v-alert v-if="error && $store.state.loginError === 'User not found'" type="error" dense text
+                class="mb-4">
                 {{ error }}
-              </div>
+              </v-alert>
 
-              <v-btn
-                color="primary"
-                class="mt-4"
-                block
-                large
-                :loading="loading"
-                @click="validate"
-              >
+              <v-btn color="primary" class="mt-4" block large :loading="loading" @click="validate">
                 Sign In
               </v-btn>
 
@@ -93,9 +71,8 @@ export default {
     async validate() {
       this.error = null;
       const isValid = await this.$refs.form.validate();
-      
+
       if (!isValid) {
-        this.error = "Please fix the validation errors above";
         return;
       }
 
@@ -108,10 +85,15 @@ export default {
 
         if (success) {
           this.$router.push('/home');
+        } else {
+          // Only set error message for non-existent users
+          const storeError = this.$store.state.loginError;
+          if (storeError === 'User not found') {
+            this.error = "Account not found. Please sign up to create an account.";
+          }
         }
       } catch (error) {
         console.error('Login error:', error);
-        this.error = "Login failed. Please check your credentials and try again.";
       } finally {
         this.loading = false;
       }
@@ -129,4 +111,4 @@ export default {
 .v-card {
   padding: 24px !important;
 }
-</style> 
+</style>
