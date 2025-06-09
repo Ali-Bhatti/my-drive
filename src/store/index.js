@@ -61,6 +61,11 @@ export default new Vuex.Store({
             // Clear user from localStorage
             localStorage.removeItem('loggedInUser');
             localStorage.removeItem('isAuthenticated');
+        },
+        updateUserAvatar(state, avatarData) {
+            if (state.loggedInUser) {
+                state.loggedInUser.avatar = avatarData;
+            }
         }
     },
     actions: {
@@ -68,7 +73,7 @@ export default new Vuex.Store({
             try {
                 // Load initial data
                 const folders = await db.getFoldersByUser(state.loggedInUser.id);
-                console.log("folders by user_id",folders);
+                console.log("folders by user_id", folders);
                 commit('setFolders', folders);
             } catch (error) {
                 console.error('Failed to initialize store:', error);
@@ -141,6 +146,21 @@ export default new Vuex.Store({
         },
         logout({ commit }) {
             commit('logout');
+        },
+        async updateAvatar({ commit, state }, avatarData) {
+            try {
+                if (state.loggedInUser) {
+                    // Update in Dexie DB
+                    await db.updateUser(state.loggedInUser.id, { avatar: avatarData });
+                    // Update in Vuex store
+                    commit('updateUserAvatar', avatarData);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Failed to update avatar:', error);
+                return false;
+            }
         }
     },
     getters: {

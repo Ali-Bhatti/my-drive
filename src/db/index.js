@@ -6,7 +6,7 @@ class MyDriveDatabase extends Dexie {
 
         // Define tables and their schema
         this.version(1).stores({
-            users: '++id, name, email, password',
+            users: '++id, name, email, password, avatar',
             folders: '++id, name, route, createdAt, createdBy',
             files: '++id, name, folderId, type, size, createdAt, createdBy'
         });
@@ -27,6 +27,10 @@ class MyDriveDatabase extends Dexie {
 
     async addUser(user) {
         return await this.users.add(user);
+    }
+
+    async updateUser(id, changes) {
+        return await this.users.update(id, changes);
     }
 
     // Helper methods for folders

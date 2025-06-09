@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
   props: {},
   data() {
@@ -148,29 +149,26 @@ export default {
       reader.onload = (e) => {
         this.avatarImage = e.target.result;
         // Save to localStorage
-        localStorage.setItem('userAvatar', e.target.result);
+        this.$store.dispatch('updateAvatar', e.target.result);
       };
       reader.readAsDataURL(file);
     }
   },
   computed: {
+    ...mapGetters(['getLoggedInUser']),
     avatarName() {
       // as I need just two characters of each word in name that ia why I wrote 2. 
       // like "Muhammad Ali" required => "MA"
-      return this.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
+      return this.getLoggedInUser?.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
     },
     userName() {
-      let user = this.$store.getters.getLoggedInUser;
+      let user = this.getLoggedInUser;
       console.log(user);
       return user?.name || 'Guest';
     }
   },
   mounted() {
-    // Load saved avatar from localStorage
-    const savedAvatar = localStorage.getItem('userAvatar');
-    if (savedAvatar) {
-      this.avatarImage = savedAvatar;
-    }
+    this.avatarImage = this.getLoggedInUser?.avatar || null;
   }
 };
 </script>
