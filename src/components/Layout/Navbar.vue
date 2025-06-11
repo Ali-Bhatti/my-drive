@@ -192,7 +192,7 @@ export default {
     avatarName() {
       // as I need just two characters of each word in name that ia why I wrote 2. 
       // like "Muhammad Ali" required => "MA"
-      return this.getLoggedInUser?.name.split(" ").map((ele, i) => i < 2 ? ele[0] : "").join('');
+      return this.getLoggedInUser?.name.split(" ").map((ele, i) => i < 2 ? ele[0].toLocaleUpperCase() : "").join('');
     },
     userName() {
       let user = this.getLoggedInUser;
