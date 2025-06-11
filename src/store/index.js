@@ -74,6 +74,7 @@ export default new Vuex.Store({
         updateUserAvatar(state, avatarData) {
             if (state.loggedInUser) {
                 state.loggedInUser.avatar = avatarData;
+                localStorage.setItem('loggedInUser', JSON.stringify(state.loggedInUser));
             }
         }
     },

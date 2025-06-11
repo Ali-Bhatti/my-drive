@@ -74,8 +74,8 @@
 
               <v-fade-transition>
                 <v-overlay absolute :value="hover" class="align-center justify-center">
-                  <v-btn small icon @click="$refs.avatarInput.click()">
-                    <v-icon color="white">mdi-camera</v-icon>
+                  <v-btn small icon @click="openAvatarDialog">
+                    <v-icon color="white">{{ avatarImage ? 'mdi-pencil' : 'mdi-camera' }}</v-icon>
                   </v-btn>
                 </v-overlay>
               </v-fade-transition>
@@ -88,6 +88,11 @@
           <p class="grey--text subheading mt-1">{{ userName }}</p>
         </v-row>
       </v-container>
+
+      <!-- Avatar Upload Dialog -->
+      <avatar-upload-dialog v-model="showAvatarDialog" :current-avatar="avatarImage" :avatar-name="avatarName"
+        @save="handleAvatarSave" />
+
       <v-list>
         <v-list-item v-for="link in links" :key="link.text" route :to="link.route">
           <v-list-item-icon>
@@ -105,10 +110,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import Logo from '../Logo.vue';
+import AvatarUploadDialog from '../AvatarUploadDialog.vue';
 
 export default {
   components: {
-    Logo
+    Logo,
+    AvatarUploadDialog
   },
   props: {},
   data() {
@@ -118,6 +125,7 @@ export default {
       showLogoutDialog: false,
       avatarBgColor: null,
       avatarImage: null,
+      showAvatarDialog: false,
       links: [
         { icon: "home", text: "Home", route: "/home" },
         { icon: "mdi-help-box", text: "About", route: "/about" },
@@ -163,10 +171,20 @@ export default {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.avatarImage = e.target.result;
-        // Save to localStorage
         this.$store.dispatch('updateAvatar', e.target.result);
       };
       reader.readAsDataURL(file);
+    },
+    async removeAvatar() {
+      this.avatarImage = null;
+      await this.$store.dispatch('updateAvatar', null);
+    },
+    openAvatarDialog() {
+      this.showAvatarDialog = true;
+    },
+    async handleAvatarSave(avatarData) {
+      this.avatarImage = avatarData;
+      await this.$store.dispatch('updateAvatar', avatarData);
     }
   },
   computed: {
