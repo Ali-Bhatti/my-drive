@@ -19,7 +19,8 @@
                                 <v-fade-transition>
                                     <v-overlay absolute :value="hover" class="align-center justify-center">
                                         <v-btn small icon @click="openAvatarDialog">
-                                            <v-icon color="white">{{ avatarImage ? 'mdi-pencil' : 'mdi-camera'}}</v-icon>
+                                            <v-icon color="white">{{ avatarImage ? 'mdi-pencil' :
+                                                'mdi-camera' }}</v-icon>
                                         </v-btn>
                                     </v-overlay>
                                 </v-fade-transition>
@@ -160,8 +161,9 @@ export default {
                 this.currentPassword = '';
                 this.newPassword = '';
                 this.confirmPassword = '';
+                this.$refs.passwordForm.reset();
             } catch (error) {
-                this.$store.dispatch('setError', 'Failed to update password');
+                this.$store.dispatch('setError', error.message || 'Failed to update password');
             } finally {
                 this.updating = false;
             }

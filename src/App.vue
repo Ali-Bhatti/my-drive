@@ -5,16 +5,20 @@
       <div :class="{ 'pa-3': !isAuthRoute }">
         <router-view />
       </div>
+      <notification />
     </v-main>
   </v-app>
 </template>
 
 <script>
 import Navbar from "./components/Layout/Navbar.vue";
+import Notification from "./components/UI/Notification.vue";
+
 export default {
   name: "App",
   components: {
     Navbar,
+    Notification
   },
   computed: {
     isAuthRoute() {

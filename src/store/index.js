@@ -29,7 +29,9 @@ export default new Vuex.Store({
             password: "123456"
         }],
         folders: [],
-        loginError: null
+        loginError: null,
+        error: null,
+        success: null
     },
     mutations: {
         setFolders(state, folders) {
@@ -89,6 +91,12 @@ export default new Vuex.Store({
                 state.loggedInUser.password = newPassword;
                 localStorage.setItem('loggedInUser', JSON.stringify(state.loggedInUser));
             }
+        },
+        setError(state, error) {
+            state.error = error;
+        },
+        setSuccess(state, message) {
+            state.success = message;
         }
     },
     actions: {
@@ -223,22 +231,32 @@ export default new Vuex.Store({
         },
         async updatePassword({ commit, state }, { currentPassword, newPassword }) {
             try {
-                if (state.loggedInUser) {
-                    // Verify current password
-                    if (state.loggedInUser.password !== currentPassword) {
-                        throw new Error('Current password is incorrect');
-                    }
-                    // Update password in DB
-                    await db.updateUser(state.loggedInUser.id, { password: newPassword });
-                    // Update in store
-                    commit('updateUserPassword', newPassword);
-                    return true;
+                if (!state.loggedInUser) {
+                    throw new Error('No user is logged in');
                 }
-                return false;
+
+                // Verify current password
+                if (state.loggedInUser.password !== currentPassword) {
+                    throw new Error('Current password is incorrect');
+                }
+
+                // Update password in DB
+                await db.updateUser(state.loggedInUser.id, { password: newPassword });
+
+                // Update in store
+                commit('updateUserPassword', newPassword);
+                commit('setSuccess', 'Password updated successfully');
+                return true;
             } catch (error) {
-                console.error('Failed to update password:', error);
+                commit('setError', error.message);
                 throw error;
             }
+        },
+        setError({ commit }, error) {
+            commit('setError', error);
+        },
+        setSuccess({ commit }, message) {
+            commit('setSuccess', message);
         }
     },
     getters: {
