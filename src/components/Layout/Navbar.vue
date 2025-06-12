@@ -124,10 +124,10 @@ export default {
       loading: false,
       showLogoutDialog: false,
       avatarBgColor: null,
-      avatarImage: null,
       showAvatarDialog: false,
       links: [
         { icon: "home", text: "Home", route: "/home" },
+        { icon: "mdi-account-cog", text: "Account", route: "/account" },
         { icon: "mdi-help-box", text: "About", route: "/about" },
       ],
     };
@@ -169,39 +169,34 @@ export default {
       }
 
       const reader = new FileReader();
-      reader.onload = (e) => {
-        this.avatarImage = e.target.result;
-        this.$store.dispatch('updateAvatar', e.target.result);
+      reader.onload = async (e) => {
+        await this.$store.dispatch('updateAvatar', e.target.result);
       };
       reader.readAsDataURL(file);
     },
     async removeAvatar() {
-      this.avatarImage = null;
       await this.$store.dispatch('updateAvatar', null);
     },
     openAvatarDialog() {
       this.showAvatarDialog = true;
     },
     async handleAvatarSave(avatarData) {
-      this.avatarImage = avatarData;
       await this.$store.dispatch('updateAvatar', avatarData);
     }
   },
   computed: {
     ...mapGetters(['getLoggedInUser']),
+    avatarImage() {
+      return this.getLoggedInUser?.avatar || null;
+    },
     avatarName() {
-      // as I need just two characters of each word in name that ia why I wrote 2. 
-      // like "Muhammad Ali" required => "MA"
-      return this.getLoggedInUser?.name.split(" ").map((ele, i) => i < 2 ? ele[0].toLocaleUpperCase() : "").join('');
+      return this.getLoggedInUser?.name.split(" ").map((ele, i) => i < 2 ? ele[0]?.toLocaleUpperCase() : "").join('');
     },
     userName() {
       let user = this.getLoggedInUser;
       console.log(user);
       return user?.name || 'Guest';
     }
-  },
-  mounted() {
-    this.avatarImage = this.getLoggedInUser?.avatar || null;
   }
 };
 </script>

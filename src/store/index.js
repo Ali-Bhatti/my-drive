@@ -76,6 +76,19 @@ export default new Vuex.Store({
                 state.loggedInUser.avatar = avatarData;
                 localStorage.setItem('loggedInUser', JSON.stringify(state.loggedInUser));
             }
+        },
+        updateUserName(state, newName) {
+            if (state.loggedInUser) {
+                state.loggedInUser.name = newName;
+                state.userName = newName;
+                localStorage.setItem('loggedInUser', JSON.stringify(state.loggedInUser));
+            }
+        },
+        updateUserPassword(state, newPassword) {
+            if (state.loggedInUser) {
+                state.loggedInUser.password = newPassword;
+                localStorage.setItem('loggedInUser', JSON.stringify(state.loggedInUser));
+            }
         }
     },
     actions: {
@@ -193,6 +206,38 @@ export default new Vuex.Store({
             } catch (error) {
                 console.error('Failed to rename folder:', error);
                 return false;
+            }
+        },
+        async updateName({ commit, state }, newName) {
+            try {
+                if (state.loggedInUser) {
+                    await db.updateUser(state.loggedInUser.id, { name: newName });
+                    commit('updateUserName', newName);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Failed to update name:', error);
+                return false;
+            }
+        },
+        async updatePassword({ commit, state }, { currentPassword, newPassword }) {
+            try {
+                if (state.loggedInUser) {
+                    // Verify current password
+                    if (state.loggedInUser.password !== currentPassword) {
+                        throw new Error('Current password is incorrect');
+                    }
+                    // Update password in DB
+                    await db.updateUser(state.loggedInUser.id, { password: newPassword });
+                    // Update in store
+                    commit('updateUserPassword', newPassword);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Failed to update password:', error);
+                throw error;
             }
         }
     },
